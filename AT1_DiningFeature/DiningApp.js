@@ -20,3 +20,15 @@ const studentBooking = new MealBooking({
   dietaryNote: "Nut allergy"
 });
 
+
+// Display the initial booking status & details
+console.log("Initial state after constructor call:");
+console.log(studentBooking.getSummary());
+
+// Use Setter to change and update values safely
+console.log("\nUpdating booking status via setter...");
+studentBooking.bookingStatus = "Confirmed";
+
+// Call the object
+console.log(studentBooking.getSummary());
+console.log(`Direct Total verification check: $${studentBooking.calculateTotal().toFixed(2)}`);
