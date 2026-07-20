@@ -7,8 +7,10 @@
 */
 
 
+// Import the MealBooking class
 const MealBooking = require("./MealBooking");
 
+// Create a new MealBooking object 
 const studentBooking = new MealBooking({
   studentId: "STU987654",
   studentName: "Alex Mercer",
@@ -18,13 +20,3 @@ const studentBooking = new MealBooking({
   dietaryNote: "Nut allergy"
 });
 
-
-console.log("Initial state after constructor call:");
-console.log(studentBooking.getSummary());
-
-console.log("\nUpdating booking status via setter...");
-studentBooking.bookingStatus = "Confirmed";
-
-
-console.log(studentBooking.getSummary());
-console.log(`Direct Total verification check: $${studentBooking.calculateTotal().toFixed(2)}`);
