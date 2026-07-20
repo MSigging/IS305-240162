@@ -91,3 +91,55 @@ class MealBooking {
     }
     this.#bookingStatus = value;
   }
+
+  // Calculation for meal costs
+
+  /**
+   * Calculates total cost based on meal type and quantity.
+   * @returns {number} Total cost
+   */
+  calculateTotal() {
+    let pricePerMeal = 0;
+
+    
+    switch (this.#mealType.toLowerCase()) {
+      case "breakfast":
+        pricePerMeal = 8.50;
+        break;
+      case "lunch":
+        pricePerMeal = 12.00;
+        break;
+      case "dinner":
+        pricePerMeal = 15.50;
+        break;
+      default:
+        pricePerMeal = 10.00; 
+    }
+
+    return pricePerMeal * this.#quantity;
+  }
+
+  /**
+   * Constructs a formatted string containing the booking details.
+   * @returns {string} Summary layout
+   */
+  getSummary() {
+    return `
+=========================================
+          MEAL BOOKING SUMMARY          
+=========================================
+Status:        [ ${this.#bookingStatus} ]
+Student ID:    ${this.#studentId}
+Student Name:  ${this.#studentName}
+Date:          ${this.#mealDate}
+Meal Type:     ${this.#mealType}
+Quantity:      ${this.#quantity}
+Dietary Note:  ${this.#dietaryNote}
+-----------------------------------------
+Total Cost:    $${this.calculateTotal().toFixed(2)}
+=========================================`;
+  }
+}
+
+
+module.exports = MealBooking;
