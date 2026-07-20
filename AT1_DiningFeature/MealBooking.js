@@ -26,5 +26,3 @@ class MealBooking {
     this.#dietaryNote = dietaryNote;
     this.#bookingStatus = "Pending"; // Set to Pending by default
   }
-
-  
