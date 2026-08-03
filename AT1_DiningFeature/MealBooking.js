@@ -175,10 +175,7 @@ class MealBooking {
     this.#bookingStatus = "Cancelled";
   }
 
-  /**
-   * Method: getSummary()
-   * Return or display a clear booking receipt formatted as specified.
-   */
+  
   getSummary() {
     const totalInKina = this.calculateTotal().toFixed(2);
     return [
