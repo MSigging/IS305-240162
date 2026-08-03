@@ -7,12 +7,6 @@
   
 */
 
-/*
-  Program: Dining Meal Booking Feature - Class Definition
-  Student Name: Megdelene SIGGING
-  Student ID: 240162
-  Date: 17 July 2026
-*/
 
 class MealBooking {
   // Declare private fields
@@ -99,9 +93,6 @@ class MealBooking {
     this.#bookingStatus = value;
   }
 
-  // =========================================================
-  // REQUIRED METHODS
-  // =========================================================
 
   /**
    * Method: validate()
@@ -139,6 +130,7 @@ class MealBooking {
    * Method: calculateTotal()
    * Return selected meal price multiplied by quantity (Total cost = meal price × quantity).
    */
+  
   calculateTotal() {
     let pricePerMeal = 0;
 
