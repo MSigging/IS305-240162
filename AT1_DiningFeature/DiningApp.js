@@ -152,7 +152,7 @@ async function runApplication() {
     console.log(`Reason: ${err.message}`);
     console.log("========================================");
   } finally {
-    rl.close();
+    rl.close(); 
   }
 }
 
