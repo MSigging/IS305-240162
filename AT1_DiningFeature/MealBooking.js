@@ -3,48 +3,57 @@
   Student Name: Megdelene SIGGING
   Student ID: 240162
   Date: 17 July 2026
-  Updated for PART2 date: 04/08/2026
+  Updated for PART2 date: 12/08/2026
   
 */
 
 
+const Student = require('./Student');
+
+
 class MealBooking {
-  // Declare private fields
-  #studentId;
-  #studentName;
+  #student; // Holds reference to a Student instance
   #mealDate;
   #mealType;
   #quantity;
   #dietaryNote;
   #bookingStatus;
 
-  constructor({ studentId, studentName, mealDate, mealType, quantity, dietaryNote = "None" }) {
-    this.#studentId = studentId ? String(studentId).trim() : "";
-    this.#studentName = studentName ? String(studentName).trim() : "";
-    this.#mealDate = mealDate ? String(mealDate).trim() : "";
-    this.#mealType = mealType ? String(mealType).trim() : "";
-    this.#quantity = parseInt(quantity, 10);
-    this.#dietaryNote = dietaryNote ? String(dietaryNote).trim() : "None";
-    this.#bookingStatus = "Pending"; // Default status: Pending
+  /**
+   * Constructs a MealBooking.
+   * @param {Object} details 
+   * @param {Student} details.student - Reference to a Student object
+   * @param {string} details.mealDate
+   * @param {string} details.mealType
+   * @param {number} details.quantity
+   * @param {string} details.dietaryNote
+   * @param {string} [details.bookingStatus="Pending"]
+   */
+  constructor({ student, mealDate, mealType, quantity, dietaryNote, bookingStatus = "Pending" }) {
+    this.student = student; // Enforces Student object validation via setter
+    this.mealDate = mealDate;
+    this.mealType = mealType;
+    this.quantity = quantity;
+    this.dietaryNote = dietaryNote;
+    this.bookingStatus = bookingStatus;
   }
 
-  // Getters and Setters
+  // Getters & Setters 
+
+  get student() {
+    return this.#student;
+  }
+
+  set student(value) {
+    if (!(value instanceof Student)) {
+      throw new Error("Invalid student: Booking must be connected to a valid Student object.");
+    }
+    this.#student = value;
+  }
+
+  // Convenient getter for duplicate check logic
   get studentId() {
-    return this.#studentId;
-  }
-
-  set studentId(value) {
-    if (!value) throw new Error("Student ID cannot be empty.");
-    this.#studentId = value;
-  }
-
-  get studentName() {
-    return this.#studentName;
-  }
-
-  set studentName(value) {
-    if (!value) throw new Error("Student Name cannot be empty.");
-    this.#studentName = value;
+    return this.#student.studentId;
   }
 
   get mealDate() {
@@ -52,8 +61,10 @@ class MealBooking {
   }
 
   set mealDate(value) {
-    if (!value) throw new Error("Meal Date cannot be empty.");
-    this.#mealDate = value;
+    if (!value || typeof value !== 'string' || value.trim() === '') {
+      throw new Error("Meal date cannot be empty.");
+    }
+    this.#mealDate = value.trim();
   }
 
   get mealType() {
@@ -61,7 +72,11 @@ class MealBooking {
   }
 
   set mealType(value) {
-    this.#mealType = value;
+    const validMeals = ["Breakfast", "Lunch", "Dinner"];
+    if (!value || !validMeals.some(m => m.toLowerCase() === value.trim().toLowerCase())) {
+      throw new Error(`Invalid meal type. Must be one of: ${validMeals.join(", ")}.`);
+    }
+    this.#mealType = value.trim();
   }
 
   get quantity() {
@@ -69,8 +84,11 @@ class MealBooking {
   }
 
   set quantity(value) {
-    if (isNaN(value) || value < 1) throw new Error("Quantity must be at least 1.");
-    this.#quantity = value;
+    const parsed = Number(value);
+    if (isNaN(parsed) || parsed < 1) {
+      throw new Error("Quantity must be a number greater than or equal to 1.");
+    }
+    this.#quantity = parsed;
   }
 
   get dietaryNote() {
@@ -78,7 +96,7 @@ class MealBooking {
   }
 
   set dietaryNote(value) {
-    this.#dietaryNote = value;
+    this.#dietaryNote = value ? value.trim() : "None";
   }
 
   get bookingStatus() {
@@ -87,101 +105,53 @@ class MealBooking {
 
   set bookingStatus(value) {
     const validStatuses = ["Pending", "Confirmed", "Cancelled"];
-    if (!validStatuses.includes(value)) {
-      throw new Error(`Invalid status. Choose from: ${validStatuses.join(", ")}`);
+    if (!value || !validStatuses.includes(value)) {
+      throw new Error(`Invalid status. Must be: ${validStatuses.join(", ")}.`);
     }
     this.#bookingStatus = value;
   }
 
-
-  /**
-   * Method: validate()
-   * Rejects missing student ID, student name, meal date, invalid meal type, or quantity < 1.
-   */
-  validate() {
-    if (!this.#studentId) {
-      throw new Error("Validation Error: Missing student ID.");
-    }
-    if (!this.#studentName) {
-      throw new Error("Validation Error: Missing student name.");
-    }
-    if (!this.#mealDate) {
-      throw new Error("Validation Error: Missing meal date.");
-    }
-
-    // Accept only Breakfast, Lunch, or Dinner
-    const validMealTypes = ["Breakfast", "Lunch", "Dinner"];
-    const matchedType = validMealTypes.find(
-      (type) => type.toLowerCase() === this.#mealType.toLowerCase()
-    );
-
-    if (!matchedType) {
-      throw new Error(`Validation Error: Invalid meal type "${this.#mealType}". Must be Breakfast, Lunch, or Dinner.`);
-    }
-    this.#mealType = matchedType; // Standardize capitalization
-
-    // Reject a quantity below 1
-    if (isNaN(this.#quantity) || this.#quantity < 1) {
-      throw new Error("Validation Error: Quantity must be at least 1.");
-    }
-  }
-
-  /**
-   * Method: calculateTotal()
-   * Return selected meal price multiplied by quantity (Total cost = meal price × quantity).
-   */
   
-  calculateTotal() {
-    let pricePerMeal = 0;
 
-    switch (this.#mealType.toLowerCase()) {
-      case "breakfast":
-        pricePerMeal = 10.00;
-        break;
-      case "lunch":
-        pricePerMeal = 15.00;
-        break;
-      case "dinner":
-        pricePerMeal = 20.00;
-        break;
-      default:
-        pricePerMeal = 0;
-    }
-
-    return pricePerMeal * this.#quantity;
+  
+   // Validates all fields manually if needed.
+   
+  validate() {
+    if (!(this.#student instanceof Student)) throw new Error("Invalid Student object.");
+    if (!this.#mealDate) throw new Error("Invalid meal date.");
+    if (!this.#mealType) throw new Error("Invalid meal type.");
+    if (this.#quantity < 1) throw new Error("Invalid quantity.");
   }
 
   /**
-   * Method: confirmBooking()
-   * Change the booking status from Pending to Confirmed.
+   * Calculates total meal price (Base price: K15.00 for Lunch, K20.00 for Dinner, K10.00 for Breakfast).
+   * @returns {number}
    */
+  calculateTotal() {
+    const baseRates = { Breakfast: 10, Lunch: 15, Dinner: 20 };
+    const rate = baseRates[this.#mealType] || 15;
+    return this.#quantity * rate;
+  }
+
+
   confirmBooking() {
     this.#bookingStatus = "Confirmed";
   }
 
-  /**
-   * Method: cancelBooking()
-   * Change the booking status to Cancelled.
-   */
   cancelBooking() {
     this.#bookingStatus = "Cancelled";
   }
 
-  
+  /**
+   * Returns a summary string referencing the connected Student object.
+   * @returns {string}
+   */
   getSummary() {
-    const totalInKina = this.calculateTotal().toFixed(2);
-    return [
-      "========================================",
-      "          BOOKING CREATED               ",
-      "========================================",
-      `Student: ${this.#studentName} (${this.#studentId})`,
-      `Meal: ${this.#mealType} x ${this.#quantity}`,
-      `Date: ${this.#mealDate}`,
-      `Dietary note: ${this.#dietaryNote}`,
-      `Status: ${this.#bookingStatus}`,
-      `Total cost: K${totalInKina}`,
-      "========================================"
-    ].join("\n");
+    return `${this.#mealType} - ${this.#mealDate}\n` +
+           `   Student: ${this.#student.getFullName()} (${this.#student.studentId})\n` +
+           `   Quantity: ${this.#quantity}\n` +
+           `   Status: ${this.#bookingStatus}\n` +
+           `   Cost: K${this.calculateTotal().toFixed(2)}`;
   }
 }
 
