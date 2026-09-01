@@ -42,10 +42,6 @@ class RewardsDiningAccount extends DiningAccount {
 }
 
 module.exports = RewardsDiningAccount;
-
-
-
-
 // ==========================================
       //PART 1 REQUIRED DEMONSTRATION RUNNER
 // ==========================================
