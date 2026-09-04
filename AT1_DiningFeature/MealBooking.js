@@ -12,147 +12,49 @@ const Student = require('./Student');
 
 
 class MealBooking {
-  #student; // Holds reference to a Student instance
-  #mealDate;
-  #mealType;
-  #quantity;
-  #dietaryNote;
-  #bookingStatus;
+    #bookingId;
+    #mealType;
+    #cost;
+    #status; // 'Pending' or 'Confirmed'
 
-  /**
-   * Constructs a MealBooking.
-   * @param {Object} details 
-   * @param {Student} details.student - Reference to a Student object
-   * @param {string} details.mealDate
-   * @param {string} details.mealType
-   * @param {number} details.quantity
-   * @param {string} details.dietaryNote
-   * @param {string} [details.bookingStatus="Pending"]
-   */
-  constructor({ student, mealDate, mealType, quantity, dietaryNote, bookingStatus = "Pending" }) {
-    this.student = student; // Enforces Student object validation via setter
-    this.mealDate = mealDate;
-    this.mealType = mealType;
-    this.quantity = quantity;
-    this.dietaryNote = dietaryNote;
-    this.bookingStatus = bookingStatus;
-  }
-
-  // Getters & Setters 
-
-  get student() {
-    return this.#student;
-  }
-
-  set student(value) {
-    if (!(value instanceof Student)) {
-      throw new Error("Invalid student: Booking must be connected to a valid Student object.");
+    constructor(bookingId, mealType, cost) {
+        if (!bookingId || !mealType || cost <= 0) {
+            throw new Error("Invalid booking initialization parameters.");
+        }
+        this.#bookingId = bookingId;
+        this.#mealType = mealType;
+        this.#cost = cost;
+        this.#status = "Pending";
     }
-    this.#student = value;
-  }
 
-  // Convenient getter for duplicate check logic
-  get studentId() {
-    return this.#student.studentId;
-  }
+    get bookingId() { return this.#bookingId; }
+    get mealType() { return this.#mealType; }
+    get cost() { return this.#cost; }
+    get status() { return this.#status; }
 
-  get mealDate() {
-    return this.#mealDate;
-  }
+    processPayment(diningAccount) {
+        // Prevent duplicate payments
+        if (this.#status === "Confirmed") {
+            console.log(`[DUPLICATE PAYMENT BLOCKED] Booking ${this.#bookingId} is already paid and confirmed.`);
+            return false;
+        }
 
-  set mealDate(value) {
-    if (!value || typeof value !== 'string' || value.trim() === '') {
-      throw new Error("Meal date cannot be empty.");
+        // Polymorphic Call: Executes payForMeal on whatever account type is passed
+        const isPaid = diningAccount.payForMeal(this.#cost, `Meal Booking: ${this.#mealType}`);
+
+        if (isPaid) {
+            this.#status = "Confirmed";
+            console.log(`[BOOKING CONFIRMED] Payment of K${this.#cost.toFixed(2)} processed for ${this.#mealType} (${this.#bookingId}).`);
+            return true;
+        } else {
+            console.log(`[BOOKING PENDING] Payment failed for ${this.#mealType} (${this.#bookingId}). Status remains Pending.`);
+            return false;
+        }
     }
-    this.#mealDate = value.trim();
-  }
 
-  get mealType() {
-    return this.#mealType;
-  }
-
-  set mealType(value) {
-    const validMeals = ["Breakfast", "Lunch", "Dinner"];
-    if (!value || !validMeals.some(m => m.toLowerCase() === value.trim().toLowerCase())) {
-      throw new Error(`Invalid meal type. Must be one of: ${validMeals.join(", ")}.`);
+    getDetails() {
+        return `Booking ID: ${this.#bookingId} | Meal: ${this.#mealType} | Cost: K${this.#cost.toFixed(2)} | Status: ${this.#status}`;
     }
-    this.#mealType = value.trim();
-  }
-
-  get quantity() {
-    return this.#quantity;
-  }
-
-  set quantity(value) {
-    const parsed = Number(value);
-    if (isNaN(parsed) || parsed < 1) {
-      throw new Error("Quantity must be a number greater than or equal to 1.");
-    }
-    this.#quantity = parsed;
-  }
-
-  get dietaryNote() {
-    return this.#dietaryNote;
-  }
-
-  set dietaryNote(value) {
-    this.#dietaryNote = value ? value.trim() : "None";
-  }
-
-  get bookingStatus() {
-    return this.#bookingStatus;
-  }
-
-  set bookingStatus(value) {
-    const validStatuses = ["Pending", "Confirmed", "Cancelled"];
-    if (!value || !validStatuses.includes(value)) {
-      throw new Error(`Invalid status. Must be: ${validStatuses.join(", ")}.`);
-    }
-    this.#bookingStatus = value;
-  }
-
-  
-
-  
-   // Validates all fields manually if needed.
-   
-  validate() {
-    if (!(this.#student instanceof Student)) throw new Error("Invalid Student object.");
-    if (!this.#mealDate) throw new Error("Invalid meal date.");
-    if (!this.#mealType) throw new Error("Invalid meal type.");
-    if (this.#quantity < 1) throw new Error("Invalid quantity.");
-  }
-
-  /**
-   * Calculates total meal price (Base price: K15.00 for Lunch, K20.00 for Dinner, K10.00 for Breakfast).
-   * @returns {number}
-   */
-  calculateTotal() {
-    const baseRates = { Breakfast: 10, Lunch: 15, Dinner: 20 };
-    const rate = baseRates[this.#mealType] || 15;
-    return this.#quantity * rate;
-  }
-
-
-  confirmBooking() {
-    this.#bookingStatus = "Confirmed";
-  }
-
-  cancelBooking() {
-    this.#bookingStatus = "Cancelled";
-  }
-
-  /**
-   * Returns a summary string referencing the connected Student object.
-   * @returns {string}
-   */
-  getSummary() {
-    return `${this.#mealType} - ${this.#mealDate}\n` +
-           `   Student: ${this.#student.getFullName()} (${this.#student.studentId})\n` +
-           `   Quantity: ${this.#quantity}\n` +
-           `   Status: ${this.#bookingStatus}\n` +
-           `   Cost: K${this.calculateTotal().toFixed(2)}`;
-  }
 }
 
 module.exports = MealBooking;

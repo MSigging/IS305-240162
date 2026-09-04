@@ -7,79 +7,41 @@
   
   */
 
+const DiningAccount = require('./DiningAccount');
+
 class Student {
-  // Private fields
-  #studentId;
-  #firstName;
-  #lastName;
+    #studentId;
+    #name;
+    #diningAccount;
 
-  /**
-   * Constructs a Student instance.
-   * @param {string} studentId 
-   * @param {string} firstName 
-   * @param {string} lastName 
-   */
-  constructor(studentId, firstName, lastName) {
-   
-    this.studentId = studentId;
-    this.firstName = firstName;
-    this.lastName = lastName;
-  }
+    constructor(studentId, name, diningAccount = null) {
+        if (!studentId || !name) {
+            throw new Error("Student ID and Name are required.");
+        }
+        this.#studentId = studentId;
+        this.#name = name;
+        this.#diningAccount = null;
 
- 
-
-  get studentId() {
-    return this.#studentId;
-  }
-
-  set studentId(value) {
-    if (!value || typeof value !== 'string' || value.trim() === '') {
-      throw new Error("Student ID cannot be empty.");
+        if (diningAccount) {
+            this.assignDiningAccount(diningAccount);
+        }
     }
-    this.#studentId = value.trim();
-  }
 
-  get firstName() {
-    return this.#firstName;
-  }
+    get studentId() { return this.#studentId; }
+    get name() { return this.#name; }
+    get diningAccount() { return this.#diningAccount; }
 
-  set firstName(value) {
-    if (!value || typeof value !== 'string' || value.trim() === '') {
-      throw new Error("First name cannot be empty.");
+    assignDiningAccount(account) {
+        if (!(account instanceof DiningAccount)) {
+            throw new Error("Invalid account: Object must be an instance of DiningAccount or its subclasses.");
+        }
+        this.#diningAccount = account;
     }
-    this.#firstName = value.trim();
-  }
 
-  get lastName() {
-    return this.#lastName;
-  }
-
-  set lastName(value) {
-    if (!value || typeof value !== 'string' || value.trim() === '') {
-      throw new Error("Last name cannot be empty.");
+    getDetails() {
+        const accInfo = this.#diningAccount ? `Account #${this.#diningAccount.accountNumber}` : "No Account Assigned";
+        return `Student ID: ${this.#studentId} | Name: ${this.#name} | ${accInfo}`;
     }
-    this.#lastName = value.trim();
-  }
-
-  // --- Required Methods ---
-
-  /**
-   * Returns the student's full name as a single string.
-   * @returns {string}
-   */
-  getFullName() {
-    return `${this.#firstName} ${this.#lastName}`;
-  }
-
- 
-  displayInfo() {
-    console.log("========================================");
-    console.log("             STUDENT DETAILS            ");
-    console.log("========================================");
-    console.log(`Student ID: ${this.#studentId}`);
-    console.log(`Student Name: ${this.getFullName()}`);
-    console.log("========================================");
-  }
 }
 
 module.exports = Student;
