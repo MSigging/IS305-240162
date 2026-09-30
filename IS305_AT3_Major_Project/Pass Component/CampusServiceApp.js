@@ -1,5 +1,5 @@
 import { User } from "./User.js";
-import { ServiceRequest, CATEGORIES, PRIORITIES } from "./ServiceRequest.js";
+import { ServiceRequest, CATEGORIES, PRIORITIES } from "../ServiceRequest.js";
 import { ServiceRequestManager } from "./ServiceRequestManager.js";
 
 // Input handling 

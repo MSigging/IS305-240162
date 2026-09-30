@@ -1,4 +1,4 @@
-import { User } from "./User.js";
+import { User } from "../User.js";
 import { ServiceRequest, STATUSES } from "./ServiceRequest.js";
 
 export class ServiceRequestManager {
