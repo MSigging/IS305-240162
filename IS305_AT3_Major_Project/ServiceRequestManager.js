@@ -10,7 +10,7 @@ export class ServiceRequestManager {
     this.#requests = [];
   }
 
-  // User Management 
+  // User Management
 
   registerUser(user) {
     if (!(user instanceof User))
