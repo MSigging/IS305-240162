@@ -18,7 +18,7 @@ export class UserFileRepository {
   }
 
   async loadAll() {
-    return readJsonArray(this.#filePath);
+    return readJsonArray(this.#filePath):
   }
 
   async saveAll(records) {
