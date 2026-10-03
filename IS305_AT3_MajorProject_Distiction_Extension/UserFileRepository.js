@@ -2,13 +2,9 @@ import { readJsonArray, writeJsonArray } from "./jsonFileStore.js";
 
 /**
  * UserFileRepository.js
- * All reading/writing of users.json lives here. Works with PLAIN data
- * (the result of calling .toJSON() on a User, or a raw parsed record
- * from disk) - never with live User class instances. Turning plain data
- * back into the correct User subclass is UserFactory's job, not this
- * repository's; this class only knows how to get records on and off
- * disk.
- */
+ * All reading/writing of users.json lives here.
+ * **/
+
 
 export class UserFileRepository {
   #filePath;
